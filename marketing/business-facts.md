@@ -15,8 +15,15 @@ Content should focus on **car detailing and ceramic coating only**. The site als
 - Corporate & fleet services — scheduled programs for businesses
 - Executive Member Services — 24/7 on-call, NDAs, confidentiality
 
-## Pricing
-Not public. [PRICE] placeholders must be filled in by the user before publishing anything with a price/offer.
+## Pricing — Ceramic Coating
+- 3-Year Ceramic Coating: **Starting at $899**
+- 5-Year Ceramic Coating: Starting at $249
+- 7-Year Ceramic Coating (graphene-enhanced): Starting at $249
+- 9-Year Ceramic Coating (graphene, self-healing): Starting at $249
+- Full packages with paint correction can run $2,999+
+
+## Pricing — Detailing
+Not public. Maintenance plans (bi-weekly/monthly/bi-monthly/quarterly) have no listed price — use [PRICE] placeholder until confirmed.
 
 ## Warranty
 "12-Month Protection Warranty" — covers product or installation failure within 12 months of service.
