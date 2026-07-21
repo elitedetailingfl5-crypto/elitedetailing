@@ -1,6 +1,9 @@
 # Elite Detailing — Business Facts
 Source: elitedetailfl.com (pulled 2026-07-21). Update this file whenever real numbers/offers change — all marketing agents should treat this as the single source of truth and must not invent facts beyond it.
 
+## Current marketing focus
+Content should focus on **car detailing and ceramic coating only**. The site also lists PPF, window tint, wraps, marine/aircraft detailing, and fleet/executive services — these are out of scope for content/ads for now unless the user explicitly asks to include them.
+
 ## Services
 - Premium car detailing — full interior/exterior detailing, maintenance packages, paint correction
 - Ceramic coatings — 3, 5, 7, and 9-year options; graphene-enhanced and self-healing variants available
