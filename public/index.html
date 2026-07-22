@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Elite Detailing — AI Agent Command Center</title>
+<style>
+  :root {
+    --gold: #d4af37;
+    --gold-bright: #f2d675;
+    --black: #0a0a0a;
+    --panel: #141414;
+    --panel-2: #1b1b1b;
+    --border: #2a2a2a;
+    --text: #f0f0f0;
+    --text-dim: #a3a3a3;
+    --green: #3ecf8e;
+    --amber: #e0a72e;
+    --red: #e0524f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: radial-gradient(circle at top, #151515, var(--black) 60%);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(212,175,55,0.08), transparent);
+  }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand-mark {
+    width: 44px; height: 44px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--gold), #8a6d1f);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: #0a0a0a; font-size: 20px;
+  }
+  .brand h1 { margin: 0; font-size: 20px; letter-spacing: 0.5px; }
+  .brand p { margin: 2px 0 0; color: var(--text-dim); font-size: 13px; }
+  .status-bar { display: flex; align-items: center; gap: 18px; font-size: 13px; color: var(--text-dim); }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--panel);
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.ok { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .dot.warning { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+  .dot.error { background: var(--red); box-shadow: 0 0 8px var(--red); }
+  .sync-btn {
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    color: #1a1400; border: none; font-weight: 700; padding: 10px 20px;
+    border-radius: 8px; cursor: pointer; font-size: 13px; letter-spacing: 0.3px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .sync-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(212,175,55,0.35); }
+  .sync-btn:disabled { opacity: 0.6; cursor: wait; transform: none; }
+
+  main { padding: 28px 32px 60px; max-width: 1400px; margin: 0 auto; }
+
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .summary-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .summary-card .label { color: var(--text-dim); font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; }
+  .summary-card .value { font-size: 26px; font-weight: 700; color: var(--gold-bright); margin-top: 6px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 18px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .card-head { display: flex; align-items: center; justify-content: space-between; }
+  .card-title { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; }
+  .icon { font-size: 20px; }
+  .badge {
+    font-size: 11px; padding: 3px 9px; border-radius: 999px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .badge.ok { background: rgba(62,207,142,0.15); color: var(--green); }
+  .badge.warning { background: rgba(224,167,46,0.15); color: var(--amber); }
+  .badge.error { background: rgba(224,82,79,0.15); color: var(--red); }
+  .summary-text { color: var(--text-dim); font-size: 13px; line-height: 1.5; }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 14px;
+    padding: 12px;
+    background: var(--panel-2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .metric { display: flex; flex-direction: column; }
+  .metric .m-label { font-size: 10.5px; color: var(--text-dim); text-transform: uppercase; }
+  .metric .m-value { font-size: 14px; font-weight: 600; color: var(--gold-bright); }
+
+  .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-dim); margin-top: 4px; }
+  ul.rec-list { margin: 4px 0 0; padding-left: 18px; font-size: 13px; color: var(--text); }
+  ul.rec-list li { margin-bottom: 4px; }
+  ul.act-list { margin: 4px 0 0; padding-left: 18px; font-size: 12.5px; color: var(--text-dim); }
+  ul.act-list li { margin-bottom: 3px; }
+
+  footer { text-align: center; padding: 30px; color: var(--text-dim); font-size: 12px; }
+  .empty-state { text-align: center; padding: 80px 20px; color: var(--text-dim); }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(0,0,0,0.3);
+    border-top-color: #1a1400; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">ED</div>
+    <div>
+      <h1>Elite Detailing — AI Agent Command Center</h1>
+      <p id="cronInfo">12 agents · running hourly</p>
+    </div>
+  </div>
+  <div class="status-bar">
+    <span class="pill"><span class="dot" id="ghlDot"></span> <span id="ghlText">GHL: checking…</span></span>
+    <span class="pill" id="lastSyncPill">Last sync: —</span>
+    <button class="sync-btn" id="syncBtn" onclick="triggerSync()">Sync Now</button>
+  </div>
+</header>
+
+<main>
+  <div class="summary-row" id="summaryRow"></div>
+  <div class="grid" id="agentGrid">
+    <div class="empty-state">Loading agents…</div>
+  </div>
+</main>
+
+<footer>Elite Detailing AI Automation System · auto-refreshes every 30s</footer>
+
+<script>
+  const REFRESH_MS = 30000;
+
+  async function fetchJSON(url, opts) {
+    const res = await fetch(url, opts);
+    if (!res.ok) throw new Error(`${url} -> ${res.status}`);
+    return res.json();
+  }
+
+  function timeAgo(iso) {
+    if (!iso) return 'never';
+    const diff = Date.now() - new Date(iso).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    return `${hrs}h ${mins % 60}m ago`;
+  }
+
+  function renderMetrics(metrics) {
+    const entries = Object.entries(metrics || {}).filter(([, v]) => typeof v !== 'object');
+    if (!entries.length) return '';
+    return `<div class="metrics">${entries.map(([k, v]) => `
+      <div class="metric">
+        <span class="m-label">${k.replace(/([A-Z])/g, ' $1')}</span>
+        <span class="m-value">${v}</span>
+      </div>`).join('')}</div>`;
+  }
+
+  function renderCard(agent) {
+    return `
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title"><span class="icon">${agent.icon || '🤖'}</span> ${agent.name}</div>
+          <span class="badge ${agent.status}">${agent.status}</span>
+        </div>
+        <div class="summary-text">${agent.summary || ''}</div>
+        ${renderMetrics(agent.metrics)}
+        ${agent.recommendations?.length ? `
+          <div>
+            <div class="section-label">Recommendations</div>
+            <ul class="rec-list">${agent.recommendations.map((r) => `<li>${r}</li>`).join('')}</ul>
+          </div>` : ''}
+        ${agent.actions?.length ? `
+          <div>
+            <div class="section-label">Recent Actions</div>
+            <ul class="act-list">${agent.actions.slice(0, 5).map((a) => `<li>${a}</li>`).join('')}</ul>
+          </div>` : ''}
+      </div>`;
+  }
+
+  function renderSummary(agents, status) {
+    const total = agents.length;
+    const ok = agents.filter((a) => a.status === 'ok').length;
+    const warn = agents.filter((a) => a.status === 'warning').length;
+    const err = agents.filter((a) => a.status === 'error').length;
+    const cards = [
+      { label: 'Active Agents', value: `${total}/12` },
+      { label: 'Healthy', value: ok },
+      { label: 'Warnings', value: warn },
+      { label: 'Errors', value: err },
+      { label: 'GHL Connection', value: status.ghlConnected ? 'Connected' : 'Offline' },
+    ];
+    document.getElementById('summaryRow').innerHTML = cards.map((c) => `
+      <div class="summary-card">
+        <div class="label">${c.label}</div>
+        <div class="value">${c.value}</div>
+      </div>`).join('');
+  }
+
+  async function refresh() {
+    try {
+      const [status, agentsRes] = await Promise.all([
+        fetchJSON('/api/status'),
+        fetchJSON('/api/agents'),
+      ]);
+
+      const dot = document.getElementById('ghlDot');
+      dot.className = 'dot ' + (status.ghlConnected ? 'ok' : 'warning');
+      document.getElementById('ghlText').textContent = status.ghlConnected ? 'GHL: Connected' : 'GHL: Offline / degraded';
+      document.getElementById('lastSyncPill').textContent = `Last sync: ${timeAgo(status.lastSyncAt)}`;
+      document.getElementById('cronInfo').textContent = `${status.agentCount} agents · cron ${status.cronSchedule}`;
+
+      const agents = agentsRes.agents || [];
+      renderSummary(agents, status);
+
+      const grid = document.getElementById('agentGrid');
+      grid.innerHTML = agents.length
+        ? agents.map(renderCard).join('')
+        : '<div class="empty-state">No agent data yet — click "Sync Now" to run the first cycle.</div>';
+
+      const btn = document.getElementById('syncBtn');
+      if (status.syncInProgress) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Syncing…';
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Sync Now';
+      }
+    } catch (err) {
+      console.error('refresh failed', err);
+    }
+  }
+
+  async function triggerSync() {
+    const btn = document.getElementById('syncBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Syncing…';
+    try {
+      await fetchJSON('/api/sync', { method: 'POST' });
+    } catch (err) {
+      console.error('sync trigger failed', err);
+    }
+    setTimeout(refresh, 2000);
+  }
+
+  refresh();
+  setInterval(refresh, REFRESH_MS);
+</script>
+
+</body>
+</html>
